@@ -17,6 +17,7 @@ import numpy as np
 from src.evaluation.spoc_esa import orbital_golomb_array
 from src.optimization.ga import run_ga
 from src.optimization.de import run_de
+from src.optimization.transformimi import ProblemiTransformuar
 
 ORBITAT = {
     "DRO": dict(ic=[0.896508460944940632764, 0., 0.,
@@ -41,11 +42,14 @@ udp = orbital_golomb_array(
     n_sat=args.N, ic=orb["ic"], T=orb["period"] * (M - 1), grid_size=args.grid,
     scaling_factor=1e-4, n_meas=M, inflation_factor=1.23, verbose=False,
 )
+udp_t = ProblemiTransformuar(udp)
 B = args.buxheti
 
 algoritmet = {
     "GA":     lambda s: run_ga(udp,   max_vleresime=B, pop_size=100, seed=s, verbose=False),
     "DE":     lambda s: run_de(udp,   max_vleresime=B, pop_size=50,  seed=s, verbose=False),
+    "GA + T": lambda s: run_ga(udp_t, max_vleresime=B, pop_size=100, seed=s, verbose=False),
+    "DE + T": lambda s: run_de(udp_t, max_vleresime=B, pop_size=50,  seed=s, verbose=False),
 }
 
 rasti = f"{args.orbita}_N{args.N}_grid{args.grid}"
