@@ -15,8 +15,6 @@ import numpy as np
 import scipy
 import PIL
 import time
-import os
-from datetime import datetime
 
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
@@ -299,19 +297,7 @@ class orbital_golomb_array:
             ax[3].imshow(otf, cmap="gray")
             ax[3].axis("off")
             ax[3].set_title("Optical Transfer Function")
-            # Krijo folder nëse s'ekziston
-            os.makedirs("saved_reconstructions", exist_ok=True)
-
-            # Emër unik me timestamp
-            filename = f"saved_reconstructions/reconstruction_{tag}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-
-            # Ruaj figurën
-            plt.savefig(filename, dpi=300, bbox_inches="tight")
-
             plt.show()
-            plt.close()
-
-            print(f"✅ U ruajt: {filename}")
 
 
         print('XY')
@@ -368,8 +354,6 @@ class orbital_golomb_array:
 
         if plotting:
             fig = plt.figure(figsize=figsize)
-            # Folder për ruajtjen e fitness plots
-            os.makedirs("saved_fitness_plots", exist_ok=True)
 
             gs = fig.add_gridspec(2, self.n_meas * 3, hspace=0.25, wspace=0.15)
             fig.suptitle('Placement of satellites (red squares) with respect to mothership (M)\nAutocorrelation matrix and corresponding fill factors.', fontsize=16, fontweight='bold', y=1.12)
@@ -501,11 +485,6 @@ class orbital_golomb_array:
                     axs[k * self.n_meas + 2 + 3 * self.n_meas].set_title(f"fill factor = {f3:1.6f}", color="red", fontsize=8)
                 else:
                     axs[k * self.n_meas + 2 + 3 * self.n_meas].set_title(f"fill factor = {f3:1.6f}", color="red", fontsize=8)
-                    filename = f"saved_fitness_plots/fitness_plot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-                    plt.savefig(filename, dpi=300, bbox_inches="tight")
-                    plt.show()
-                    plt.close()
-                    print(f"✅ Fitness plot u ruajt: {filename}")
 
 
         return [-min(fill_factor)] # Return worst of all three observations
