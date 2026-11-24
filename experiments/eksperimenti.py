@@ -12,6 +12,8 @@ Opsione tjera:  --buxheti 20000   (vleresime per ekzekutim)
 Rezultatet ruhen ne results/:  <rasti>.csv  dhe  <rasti>.png
 """
 import argparse
+import csv
+import os
 import time
 import numpy as np
 from src.evaluation.spoc_esa import orbital_golomb_array
@@ -66,7 +68,7 @@ for emri, ekzekuto in algoritmet.items():
         rreshtat.append({"algoritmi": emri, "seed": s, "fitness": best_f, "koha_s": round(koha, 1)})
         historite[emri].append(historia)
 
-       
+# Permbledhja
 # Kufiri teorik: N satelite japin te shumten N*(N-1)+1 pika ne planin uv, qe ka (2*grid-1)^2 qeliza.
 # Per N te vogel (p.sh. N=5) ky eshte optimumi i sakte; per N=40 eshte vetem kufi i siperm.
 qelizat = (2 * args.grid - 1) ** 2
@@ -75,3 +77,10 @@ print(f"\nKufiri teorik: {kufiri:.5f}")
 for emri in algoritmet:
     vlerat = [r["fitness"] for r in rreshtat if r["algoritmi"] == emri]
     print(f"{emri:7s}  mesatarja {np.mean(vlerat):.5f}   devijimi {np.std(vlerat):.5f}   me i miri {min(vlerat):.5f}")
+
+# Ruajtja ne CSV
+os.makedirs("results", exist_ok=True)
+with open(f"results/{rasti}.csv", "w", newline="") as f:
+    w = csv.DictWriter(f, fieldnames=["algoritmi", "seed", "fitness", "koha_s"])
+    w.writeheader()
+    w.writerows(rreshtat)
