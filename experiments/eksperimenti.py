@@ -65,3 +65,13 @@ for emri, ekzekuto in algoritmet.items():
         print(f"{emri:7s} seed {s}:  fitness {best_f:.5f}   ({koha:.0f} s)")
         rreshtat.append({"algoritmi": emri, "seed": s, "fitness": best_f, "koha_s": round(koha, 1)})
         historite[emri].append(historia)
+
+       
+# Kufiri teorik: N satelite japin te shumten N*(N-1)+1 pika ne planin uv, qe ka (2*grid-1)^2 qeliza.
+# Per N te vogel (p.sh. N=5) ky eshte optimumi i sakte; per N=40 eshte vetem kufi i siperm.
+qelizat = (2 * args.grid - 1) ** 2
+kufiri = -3 * min(args.N * (args.N - 1) + 1, qelizat) / qelizat
+print(f"\nKufiri teorik: {kufiri:.5f}")
+for emri in algoritmet:
+    vlerat = [r["fitness"] for r in rreshtat if r["algoritmi"] == emri]
+    print(f"{emri:7s}  mesatarja {np.mean(vlerat):.5f}   devijimi {np.std(vlerat):.5f}   me i miri {min(vlerat):.5f}")
