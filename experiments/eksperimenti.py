@@ -16,6 +16,7 @@ import csv
 import os
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 from src.evaluation.spoc_esa import orbital_golomb_array
 from src.optimization.ga import run_ga
 from src.optimization.de import run_de
@@ -84,3 +85,22 @@ with open(f"results/{rasti}.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=["algoritmi", "seed", "fitness", "koha_s"])
     w.writeheader()
     w.writerows(rreshtat)
+
+# Grafiku
+stili = {"GA": ("tab:blue", ":"), "DE": ("tab:orange", ":"),
+         "GA + T": ("tab:blue", "-"), "DE + T": ("tab:orange", "-")}
+for emri, lista in historite.items():
+    ngjyra, vija = stili[emri]
+    for j, historia in enumerate(lista):
+        vl, fit = zip(*historia)
+        plt.plot(vl, fit, color=ngjyra, linestyle=vija, alpha=0.8, label=emri if j == 0 else None)
+if args.N <= 10:
+    plt.axhline(kufiri, color="gray", linestyle="--", label="optimumi teorik")
+plt.xlabel("Numri i vleresimeve")
+plt.ylabel("Fitness-i me i mire (me poshte = me mire)")
+plt.title(f"{args.orbita}, N={args.N}, grid {args.grid}")
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.savefig(f"results/{rasti}.png", dpi=150, bbox_inches="tight")
+print(f"\nU ruajten: results/{rasti}.csv  dhe  results/{rasti}.png")
+plt.show()
