@@ -12,7 +12,11 @@ Opsione tjera:  --buxheti 20000   (vleresime per ekzekutim)
 Rezultatet ruhen ne results/:  <rasti>.csv  dhe  <rasti>.png
 """
 import argparse
+import time
+import numpy as np
 from src.evaluation.spoc_esa import orbital_golomb_array
+from src.optimization.ga import run_ga
+from src.optimization.de import run_de
 
 ORBITAT = {
     "DRO": dict(ic=[0.896508460944940632764, 0., 0.,
@@ -37,6 +41,23 @@ udp = orbital_golomb_array(
     n_sat=args.N, ic=orb["ic"], T=orb["period"] * (M - 1), grid_size=args.grid,
     scaling_factor=1e-4, n_meas=M, inflation_factor=1.23, verbose=False,
 )
+B = args.buxheti
 
-print(f"Rasti: {args.orbita}, N={args.N}, grid {args.grid}")
-print(f"Numri i variablave: {len(udp.get_bounds()[0])}")
+algoritmet = {
+    "GA":     lambda s: run_ga(udp,   max_vleresime=B, pop_size=100, seed=s, verbose=False),
+    "DE":     lambda s: run_de(udp,   max_vleresime=B, pop_size=50,  seed=s, verbose=False),
+}
+
+rasti = f"{args.orbita}_N{args.N}_grid{args.grid}"
+print(f"Rasti: {rasti}   buxheti: {B} vleresime   seeds: {args.seeds}\n")
+
+rreshtat, historite = [], {}
+for emri, ekzekuto in algoritmet.items():
+    historite[emri] = []
+    for s in args.seeds:
+        start = time.time()
+        best_x, best_f, historia = ekzekuto(s)
+        koha = time.time() - start
+        print(f"{emri:7s} seed {s}:  fitness {best_f:.5f}   ({koha:.0f} s)")
+        rreshtat.append({"algoritmi": emri, "seed": s, "fitness": best_f, "koha_s": round(koha, 1)})
+        historite[emri].append(historia)
